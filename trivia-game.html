@@ -5,22 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Pick the Right Ones!</title>
 <style>
-  /* ── Reset & base ─────────────────────────── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:        #0f1117;
-    --surface:   #1a1d27;
-    --surface2:  #222534;
-    --border:    #2e3246;
-    --accent:    #6c63ff;
-    --accent2:   #a78bfa;
-    --green:     #22c55e;
-    --red:       #ef4444;
-    --yellow:    #f59e0b;
-    --text:      #e2e8f0;
-    --muted:     #64748b;
-    --radius:    12px;
+    --bg:       #0f1117;
+    --surface:  #1a1d27;
+    --surface2: #222534;
+    --border:   #2e3246;
+    --accent:   #6c63ff;
+    --accent2:  #a78bfa;
+    --green:    #22c55e;
+    --red:      #ef4444;
+    --yellow:   #f59e0b;
+    --text:     #e2e8f0;
+    --muted:    #64748b;
+    --radius:   12px;
   }
 
   body {
@@ -34,376 +33,201 @@
     padding: 24px 16px 60px;
   }
 
-  /* ── Header ───────────────────────────────── */
+  /* ── Header ── */
   header {
-    width: 100%;
-    max-width: 860px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    width: 100%; max-width: 860px;
+    display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 28px;
   }
-
   .logo {
-    font-size: 1.4rem;
-    font-weight: 800;
+    font-size: 1.4rem; font-weight: 800;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
-
   .score-badge {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 6px 18px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--accent2);
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 999px; padding: 6px 18px;
+    font-size: 0.85rem; font-weight: 600; color: var(--accent2);
   }
 
-  /* ── Card ─────────────────────────────────── */
+  /* ── Card ── */
   .card {
-    width: 100%;
-    max-width: 860px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 32px 32px 28px;
+    width: 100%; max-width: 860px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 18px; padding: 32px 32px 28px;
   }
 
-  /* ── Progress bar ────────────────────────── */
+  /* ── Progress ── */
   .progress-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    font-size: 0.8rem;
-    color: var(--muted);
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px; font-size: 0.8rem; color: var(--muted);
   }
+  .progress-track { flex: 1; height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .progress-fill  { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 999px; transition: width 0.4s ease; }
 
-  .progress-track {
-    flex: 1;
-    height: 6px;
-    background: var(--border);
-    border-radius: 999px;
-    overflow: hidden;
-  }
+  /* ── Question ── */
+  .question-text { font-size: 1.25rem; font-weight: 700; line-height: 1.45; margin-bottom: 10px; }
 
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 999px;
-    transition: width 0.4s ease;
-  }
-
-  /* ── Question ─────────────────────────────── */
-  .question-text {
-    font-size: 1.25rem;
-    font-weight: 700;
-    line-height: 1.45;
-    margin-bottom: 10px;
-  }
-
-  .meta-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
-
+  .meta-row { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
   .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.78rem; font-weight: 600; padding: 4px 12px;
+    border-radius: 999px; border: 1px solid var(--border); background: var(--surface2);
   }
+  .pill.target    { color: var(--accent2); border-color: var(--accent); }
+  .pill.attempts  { color: var(--yellow); border-color: var(--yellow); }
+  .pill.confirmed { color: var(--green);  border-color: var(--green); }
+  .pill.selected  { color: var(--text); }
 
-  .pill.attempts { color: var(--yellow); border-color: var(--yellow); }
-  .pill.correct-count { color: var(--accent2); border-color: var(--accent); }
-  .pill.selected-count { color: var(--text); }
+  /* ── Legend ── */
+  .legend {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    font-size: 0.75rem; color: var(--muted); margin-bottom: 16px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot  { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .legend-dot.neutral  { background: var(--surface2); border: 1px solid var(--border); }
+  .legend-dot.selected { background: #1a1a40; border: 2px solid var(--accent); }
+  .legend-dot.hit      { background: #14291e; border: 2px solid var(--green); }
+  .legend-dot.miss     { background: #2a1414; border: 2px solid var(--red); }
 
-  /* ── Options grid ────────────────────────── */
+  /* ── Options grid ── */
   .options-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 10px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px; margin-bottom: 24px;
   }
 
   .option-btn {
     position: relative;
-    background: var(--surface2);
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px 14px;
-    font-size: 0.88rem;
-    font-weight: 500;
-    color: var(--text);
-    cursor: pointer;
-    text-align: left;
+    background: var(--surface2); border: 2px solid var(--border);
+    border-radius: var(--radius); padding: 11px 30px 11px 13px;
+    font-size: 0.88rem; font-weight: 500; color: var(--text);
+    cursor: pointer; text-align: left;
     transition: border-color 0.15s, background 0.15s, transform 0.1s;
-    line-height: 1.3;
-    user-select: none;
+    line-height: 1.3; user-select: none; min-height: 48px;
+  }
+  .option-btn:hover:not(:disabled):not(.hit):not(.miss) {
+    border-color: var(--accent); background: #1e2035; transform: translateY(-1px);
   }
 
-  .option-btn:hover:not(:disabled) {
-    border-color: var(--accent);
-    background: #1e2035;
-    transform: translateY(-1px);
+  /* Selected (this attempt) */
+  .option-btn.selected { border-color: var(--accent); background: #1a1a40; }
+
+  /* Confirmed correct from a past attempt */
+  .option-btn.hit {
+    border-color: var(--green); background: #14291e; color: var(--green);
+    cursor: default;
   }
 
-  .option-btn.selected {
-    border-color: var(--accent);
-    background: #1a1a40;
+  /* Confirmed wrong from a past attempt */
+  .option-btn.miss {
+    border-color: var(--red); background: #2a1414; color: var(--red);
+    cursor: default; text-decoration: line-through; opacity: 0.7;
   }
 
-  .option-btn.selected::after {
-    content: '✓';
-    position: absolute;
-    top: 6px;
-    right: 8px;
-    font-size: 0.75rem;
-    color: var(--accent2);
-    font-weight: 900;
+  /* Reveal at game end */
+  .option-btn.reveal-correct { border-color: var(--green); background: #14291e; color: var(--green); cursor: default; }
+  .option-btn.reveal-wrong   { border-color: var(--red);   background: #2a1414; color: var(--red);   cursor: default; text-decoration: line-through; opacity: 0.7; }
+  .option-btn.reveal-neutral { cursor: default; opacity: 0.4; }
+
+  /* Badge icon top-right */
+  .option-btn::after {
+    position: absolute; top: 6px; right: 8px;
+    font-size: 0.7rem; font-weight: 900;
   }
+  .option-btn.selected::after  { content: '○'; color: var(--accent2); }
+  .option-btn.hit::after       { content: '✓'; color: var(--green); }
+  .option-btn.miss::after      { content: '✗'; color: var(--red); }
+  .option-btn.reveal-correct::after { content: '✓'; color: var(--green); }
+  .option-btn.reveal-wrong::after   { content: '✗'; color: var(--red); }
 
-  /* Reveal states */
-  .option-btn.reveal-correct {
-    border-color: var(--green);
-    background: #14291e;
-    color: var(--green);
-  }
+  .option-btn:disabled { transform: none; }
 
-  .option-btn.reveal-correct::after {
-    content: '✓';
-    position: absolute;
-    top: 6px;
-    right: 8px;
-    font-size: 0.75rem;
-    color: var(--green);
-    font-weight: 900;
-  }
-
-  .option-btn.reveal-wrong {
-    border-color: var(--red);
-    background: #2a1414;
-    color: var(--red);
-    text-decoration: line-through;
-  }
-
-  .option-btn.reveal-wrong::after {
-    content: '✗';
-    position: absolute;
-    top: 6px;
-    right: 8px;
-    font-size: 0.75rem;
-    color: var(--red);
-    font-weight: 900;
-  }
-
-  .option-btn:disabled { cursor: default; transform: none; }
-
-  /* ── Feedback banner ─────────────────────── */
-  .feedback {
-    border-radius: var(--radius);
-    padding: 12px 16px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    margin-bottom: 18px;
-    display: none;
-  }
-
+  /* ── Feedback banner ── */
+  .feedback { border-radius: var(--radius); padding: 12px 16px; font-size: 0.88rem; font-weight: 600; margin-bottom: 18px; display: none; }
   .feedback.visible { display: block; }
   .feedback.error { background: #2a1414; border: 1px solid var(--red); color: var(--red); }
-  .feedback.info  { background: #1a1a3a; border: 1px solid var(--accent); color: var(--accent2); }
   .feedback.warn  { background: #2a2010; border: 1px solid var(--yellow); color: var(--yellow); }
 
-  /* ── Actions row ─────────────────────────── */
-  .actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
+  /* ── Actions ── */
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; }
   .btn {
-    flex: 1;
-    min-width: 120px;
-    padding: 13px 20px;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 0.9rem;
-    font-weight: 700;
-    cursor: pointer;
+    flex: 1; min-width: 120px; padding: 13px 20px;
+    border: none; border-radius: var(--radius);
+    font-size: 0.9rem; font-weight: 700; cursor: pointer;
     transition: opacity 0.15s, transform 0.1s;
   }
-
   .btn:active { transform: scale(0.97); }
   .btn:disabled { opacity: 0.35; cursor: default; }
+  .btn-primary   { background: linear-gradient(135deg, var(--accent), #8b5cf6); color: #fff; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent), #8b5cf6);
-    color: #fff;
-  }
-
-  .btn-secondary {
-    background: var(--surface2);
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
-
-  /* ── Game-over overlay ───────────────────── */
-  #game-over {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 20px 0 8px;
-  }
-
-  #game-over.visible { display: flex; }
-
-  .result-emoji { font-size: 3.5rem; margin-bottom: 12px; line-height: 1; }
-
-  .result-title {
-    font-size: 1.8rem;
-    font-weight: 800;
-    margin-bottom: 6px;
-  }
-
-  .result-title.won { color: var(--green); }
+  /* ── Round result overlay ── */
+  #round-result { display: none; flex-direction: column; align-items: center; text-align: center; padding: 20px 0 8px; }
+  #round-result.visible { display: flex; }
+  .result-emoji { font-size: 3rem; margin-bottom: 10px; line-height: 1; }
+  .result-title { font-size: 1.7rem; font-weight: 800; margin-bottom: 6px; }
+  .result-title.won  { color: var(--green); }
   .result-title.lost { color: var(--red); }
+  .result-sub { color: var(--muted); font-size: 0.92rem; margin-bottom: 18px; }
+  .score-display { font-size: 2.8rem; font-weight: 900; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; }
+  .score-label { color: var(--muted); font-size: 0.8rem; margin-bottom: 22px; }
+  .stats-row { display: flex; gap: 14px; margin-bottom: 24px; flex-wrap: wrap; justify-content: center; }
+  .stat-box { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 20px; text-align: center; }
+  .stat-num { font-size: 1.35rem; font-weight: 800; color: var(--accent2); }
+  .stat-lbl { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
 
-  .result-sub {
-    color: var(--muted);
-    font-size: 0.95rem;
-    margin-bottom: 20px;
-  }
-
-  .score-display {
-    font-size: 3rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 4px;
-  }
-
-  .score-label { color: var(--muted); font-size: 0.8rem; margin-bottom: 24px; }
-
-  .stats-row {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 28px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .stat-box {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px 22px;
-    text-align: center;
-  }
-
-  .stat-num { font-size: 1.4rem; font-weight: 800; color: var(--accent2); }
-  .stat-lbl { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
-
-  /* ── Start / menu screen ─────────────────── */
+  /* ── Start screen ── */
   #start-screen {
-    width: 100%;
-    max-width: 860px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 48px 32px;
-    text-align: center;
+    width: 100%; max-width: 860px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 18px; padding: 48px 32px; text-align: center;
   }
-
-  .start-title {
-    font-size: 2.4rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 10px;
-  }
-
-  .start-sub {
-    color: var(--muted);
-    font-size: 0.95rem;
-    margin-bottom: 32px;
-    line-height: 1.6;
-  }
-
-  .rules-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 14px;
-    margin-bottom: 36px;
-    text-align: left;
-  }
-
-  .rule-box {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-  }
-
-  .rule-icon { font-size: 1.4rem; margin-bottom: 6px; }
+  .start-title { font-size: 2.4rem; font-weight: 900; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px; }
+  .start-sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 32px; line-height: 1.6; }
+  .rules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 14px; margin-bottom: 36px; text-align: left; }
+  .rule-box  { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  .rule-icon  { font-size: 1.35rem; margin-bottom: 6px; }
   .rule-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; }
-  .rule-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+  .rule-desc  { font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════ START SCREEN ══════════════════ -->
+<!-- ══ START SCREEN ══ -->
 <div id="start-screen">
   <div class="start-title">Pick the Right Ones!</div>
   <p class="start-sub">
-    Each round you'll get a question and <strong>20 options</strong>.<br>
-    You need to find all the correct ones — we'll tell you how many to find.
+    Each round you get a question and <strong>10–15 options</strong>.<br>
+    Find all the correct ones — we tell you exactly how many.
   </p>
-
   <div class="rules-grid">
     <div class="rule-box">
       <div class="rule-icon">🎯</div>
-      <div class="rule-title">Select exactly the right count</div>
-      <div class="rule-desc">Each question tells you how many correct answers to find.</div>
+      <div class="rule-title">Find all correct answers</div>
+      <div class="rule-desc">Each question tells you how many correct answers are hiding in the list.</div>
+    </div>
+    <div class="rule-box">
+      <div class="rule-icon">🟢🔴</div>
+      <div class="rule-title">See what was right & wrong</div>
+      <div class="rule-desc">After each guess, correct picks turn green (locked in), wrong ones turn red (ruled out).</div>
     </div>
     <div class="rule-box">
       <div class="rule-icon">🔁</div>
       <div class="rule-title">3 attempts per question</div>
-      <div class="rule-desc">You have 3 tries to get it right before the answer is revealed.</div>
+      <div class="rule-desc">Use the feedback to narrow it down over up to 3 tries.</div>
     </div>
     <div class="rule-box">
       <div class="rule-icon">⚡</div>
       <div class="rule-title">Score by speed</div>
-      <div class="rule-desc">1st try = 1000 pts · 2nd = 800 pts · 3rd = 600 pts</div>
-    </div>
-    <div class="rule-box">
-      <div class="rule-icon">📚</div>
-      <div class="rule-title">10 questions</div>
-      <div class="rule-desc">General knowledge across science, geography, culture, and more.</div>
+      <div class="rule-desc">1st try = 1000 pts · 2nd = 800 · 3rd = 600</div>
     </div>
   </div>
-
-  <button class="btn btn-primary" onclick="startGame()" style="max-width:260px;margin:0 auto;">
-    Start Game
-  </button>
+  <button class="btn btn-primary" onclick="startGame()" style="max-width:240px;margin:0 auto;">Start Game</button>
 </div>
 
-<!-- ══════════════════ GAME SCREEN ══════════════════ -->
+<!-- ══ GAME SCREEN ══ -->
 <div id="game-screen" style="display:none;width:100%;max-width:860px;">
   <header>
     <div class="logo">Pick the Right Ones!</div>
@@ -411,76 +235,72 @@
   </header>
 
   <div class="card" id="question-card">
-    <!-- Progress -->
     <div class="progress-row">
       <span id="progress-label">Question 1 / 10</span>
-      <div class="progress-track">
-        <div class="progress-fill" id="progress-fill" style="width:10%"></div>
-      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:10%"></div></div>
     </div>
 
-    <!-- Question -->
     <div class="question-text" id="question-text"></div>
 
     <div class="meta-row">
-      <span class="pill correct-count" id="correct-count-pill"></span>
-      <span class="pill attempts" id="attempts-pill"></span>
-      <span class="pill selected-count" id="selected-pill">0 selected</span>
+      <span class="pill target"    id="pill-target"></span>
+      <span class="pill confirmed" id="pill-confirmed" style="display:none"></span>
+      <span class="pill selected"  id="pill-selected">0 selected</span>
+      <span class="pill attempts"  id="pill-attempts"></span>
     </div>
 
-    <!-- Options -->
+    <!-- Legend (shown after first wrong attempt) -->
+    <div class="legend" id="legend" style="display:none">
+      <div class="legend-item"><div class="legend-dot hit"></div> Confirmed correct</div>
+      <div class="legend-item"><div class="legend-dot miss"></div> Ruled out</div>
+      <div class="legend-item"><div class="legend-dot selected"></div> Your pick</div>
+      <div class="legend-item"><div class="legend-dot neutral"></div> Unknown</div>
+    </div>
+
     <div class="options-grid" id="options-grid"></div>
 
-    <!-- Feedback -->
     <div class="feedback" id="feedback"></div>
 
-    <!-- Actions -->
     <div class="actions" id="actions-row">
       <button class="btn btn-secondary" onclick="clearSelection()">Clear</button>
-      <button class="btn btn-primary" onclick="handleSubmit()">Submit Answer</button>
+      <button class="btn btn-primary"   onclick="handleSubmit()">Submit Answer</button>
     </div>
 
-    <!-- Game-over overlay (per question) -->
-    <div id="game-over">
+    <!-- Round result -->
+    <div id="round-result">
       <div class="result-emoji" id="result-emoji"></div>
       <div class="result-title" id="result-title"></div>
-      <div class="result-sub" id="result-sub"></div>
-      <div class="score-display" id="round-score-display"></div>
-      <div class="score-label" id="round-score-label"></div>
+      <div class="result-sub"   id="result-sub"></div>
+      <div class="score-display" id="round-score"></div>
+      <div class="score-label">points this round</div>
       <div class="stats-row" id="stats-row"></div>
       <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()" style="max-width:220px;"></button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════ FINAL SCORE SCREEN ══════════════════ -->
+<!-- ══ FINAL SCREEN ══ -->
 <div id="final-screen" style="display:none;width:100%;max-width:860px;text-align:center;">
-  <header>
-    <div class="logo">Pick the Right Ones!</div>
-    <div></div>
-  </header>
+  <header><div class="logo">Pick the Right Ones!</div><div></div></header>
   <div class="card">
     <div style="padding:20px 0;">
       <div style="font-size:3.5rem;margin-bottom:12px;">🏆</div>
       <div style="font-size:1.8rem;font-weight:900;margin-bottom:8px;">Game Complete!</div>
       <div style="color:var(--muted);font-size:0.95rem;margin-bottom:28px;">Here's how you did across all 10 questions</div>
-
-      <div class="score-display" id="final-score-display"></div>
+      <div class="score-display" id="final-score"></div>
       <div style="color:var(--muted);font-size:0.85rem;margin-bottom:28px;">Total Score</div>
-
       <div class="stats-row" style="justify-content:center;" id="final-stats"></div>
-
-      <button class="btn btn-primary" onclick="restartGame()" style="max-width:220px;margin:0 auto;">
-        Play Again
-      </button>
+      <button class="btn btn-primary" onclick="restartGame()" style="max-width:220px;margin:0 auto;">Play Again</button>
     </div>
   </div>
 </div>
 
 <script>
-// ════════════════════════════════════════════════════
-// GAME LOGIC  (inlined from game-logic.js)
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════
+// GAME LOGIC
+// ════════════════════════════════════════════
+
+const MIN_DISTRACTORS = 3;
 
 function shuffleArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
@@ -490,20 +310,36 @@ function shuffleArray(arr) {
   return arr;
 }
 
+function sampleOptions(allOptions, targetCount) {
+  const correct   = allOptions.filter(o => o.correct);
+  const incorrect = allOptions.filter(o => !o.correct);
+  const incorrectNeeded = Math.min(targetCount - correct.length, incorrect.length);
+  const sampledIncorrect = shuffleArray([...incorrect]).slice(0, incorrectNeeded);
+  return shuffleArray([...correct, ...sampledIncorrect]);
+}
+
+function pickOptionCount(correctCount, min = 10, max = 15) {
+  const floor = Math.max(min, correctCount + MIN_DISTRACTORS);
+  const ceil  = max;
+  if (floor > ceil) return ceil;
+  return Math.floor(Math.random() * (ceil - floor + 1)) + floor;
+}
+
 function createGame(questionData, maxAttempts = 3) {
-  if (!questionData || !Array.isArray(questionData.options)) throw new Error('Invalid question data');
-  if (questionData.options.length !== 20) throw new Error('Expected 20 options');
-  const correctCount = questionData.options.filter(o => o.correct).length;
-  if (correctCount < 1) throw new Error('No correct answers');
-  const shuffled = shuffleArray([...questionData.options]);
+  const allOptions   = questionData.options;
+  const correctCount = allOptions.filter(o => o.correct).length;
+  const n = pickOptionCount(correctCount);
+  const options = sampleOptions(allOptions, n);
   return {
-    question: questionData.question,
-    options: shuffled,
+    question:          questionData.question,
+    options,
     correctCount,
     maxAttempts,
-    attemptsUsed: 0,
-    selected: new Set(),
-    status: 'playing',
+    attemptsUsed:      0,
+    selected:          new Set(),
+    hitIndices:        new Set(),  // locked green
+    missIndices:       new Set(),  // locked red
+    status:            'playing',
     lastAttemptResult: null,
   };
 }
@@ -511,29 +347,45 @@ function createGame(questionData, maxAttempts = 3) {
 function toggleOption(state, index) {
   if (state.status !== 'playing') return state;
   if (index < 0 || index >= state.options.length) return state;
+  if (state.hitIndices.has(index) || state.missIndices.has(index)) return state;
+  const needed   = state.correctCount - state.hitIndices.size;
   const selected = new Set(state.selected);
-  selected.has(index) ? selected.delete(index) : selected.add(index);
+  if (selected.has(index)) {
+    selected.delete(index);
+  } else {
+    if (selected.size >= needed) return state;
+    selected.add(index);
+  }
   return { ...state, selected };
 }
 
 function submitAttempt(state) {
   if (state.status !== 'playing') return { newState: state, error: 'Game is already over' };
-  if (state.selected.size !== state.correctCount) {
-    return { newState: state, error: `Select exactly ${state.correctCount} answer${state.correctCount > 1 ? 's' : ''} before submitting` };
+  const needed = state.correctCount - state.hitIndices.size;
+  if (state.selected.size !== needed) {
+    return { newState: state, error: `Select ${needed} more answer${needed !== 1 ? 's' : ''} before submitting` };
   }
+  const newHits   = new Set(state.hitIndices);
+  const newMisses = new Set(state.missIndices);
+  for (const idx of state.selected) {
+    state.options[idx].correct ? newHits.add(idx) : newMisses.add(idx);
+  }
+  const attemptResult = state.options.map((opt, i) => {
+    if (!state.selected.has(i)) return null;
+    return opt.correct ? 'hit' : 'miss';
+  });
+  const allCorrect   = newHits.size === state.correctCount;
   const attemptsUsed = state.attemptsUsed + 1;
-  const correct = state.options.map((opt, i) => state.selected.has(i) === opt.correct);
-  const allCorrect = correct.every(Boolean);
-  let status = state.status;
-  if (allCorrect) status = 'won';
+  let status = 'playing';
+  if (allCorrect)                             status = 'won';
   else if (attemptsUsed >= state.maxAttempts) status = 'lost';
   return {
-    newState: { ...state, attemptsUsed, selected: new Set(), status, lastAttemptResult: { correct, allCorrect } },
+    newState: { ...state, attemptsUsed, selected: new Set(), hitIndices: newHits, missIndices: newMisses, status, lastAttemptResult: { allCorrect, attemptResult } },
     error: null,
   };
 }
 
-function calculateScore(attemptsUsed, maxAttempts, won) {
+function calculateScore(attemptsUsed, won) {
   if (!won) return 0;
   return Math.max(1000 - (attemptsUsed - 1) * 200, 100);
 }
@@ -542,269 +394,230 @@ function getCorrectIndices(state) {
   return state.options.map((opt, i) => opt.correct ? i : null).filter(i => i !== null);
 }
 
-// ════════════════════════════════════════════════════
-// QUESTION BANK  (inlined from questions.js)
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════
+// QUESTION BANK
+// ════════════════════════════════════════════
 
 const QUESTIONS = [
   {
     question: "Which of these are planets in our solar system?",
     options: [
-      { text: "Mercury",   correct: true  }, { text: "Venus",     correct: true  },
-      { text: "Earth",     correct: true  }, { text: "Mars",      correct: true  },
-      { text: "Jupiter",   correct: true  }, { text: "Saturn",    correct: true  },
-      { text: "Uranus",    correct: true  }, { text: "Neptune",   correct: true  },
-      { text: "Pluto",     correct: false }, { text: "Ceres",     correct: false },
-      { text: "Europa",    correct: false }, { text: "Titan",     correct: false },
-      { text: "Ganymede",  correct: false }, { text: "Io",        correct: false },
-      { text: "Eris",      correct: false }, { text: "Makemake",  correct: false },
-      { text: "Haumea",    correct: false }, { text: "Triton",    correct: false },
-      { text: "Callisto",  correct: false }, { text: "Phobos",    correct: false },
+      {text:"Mercury",correct:true},{text:"Venus",correct:true},{text:"Earth",correct:true},{text:"Mars",correct:true},
+      {text:"Jupiter",correct:true},{text:"Saturn",correct:true},{text:"Uranus",correct:true},{text:"Neptune",correct:true},
+      {text:"Pluto",correct:false},{text:"Ceres",correct:false},{text:"Europa",correct:false},{text:"Titan",correct:false},
+      {text:"Ganymede",correct:false},{text:"Io",correct:false},{text:"Eris",correct:false},{text:"Makemake",correct:false},
+      {text:"Haumea",correct:false},{text:"Triton",correct:false},{text:"Callisto",correct:false},{text:"Phobos",correct:false},
     ],
   },
   {
-    question: "Which of these countries are in South America?",
+    question: "Which of these are countries in South America?",
     options: [
-      { text: "Brazil",      correct: true  }, { text: "Argentina",   correct: true  },
-      { text: "Colombia",    correct: true  }, { text: "Chile",       correct: true  },
-      { text: "Peru",        correct: true  }, { text: "Ecuador",     correct: true  },
-      { text: "Mexico",      correct: false }, { text: "Panama",      correct: false },
-      { text: "Cuba",        correct: false }, { text: "Costa Rica",  correct: false },
-      { text: "Portugal",    correct: false }, { text: "Spain",       correct: false },
-      { text: "Nigeria",     correct: false }, { text: "Bolivia",     correct: false },
-      { text: "Paraguay",    correct: false }, { text: "Uruguay",     correct: false },
-      { text: "Venezuela",   correct: false }, { text: "Guyana",      correct: false },
-      { text: "Suriname",    correct: false }, { text: "French Guiana", correct: false },
+      {text:"Brazil",correct:true},{text:"Argentina",correct:true},{text:"Colombia",correct:true},
+      {text:"Chile",correct:true},{text:"Peru",correct:true},{text:"Ecuador",correct:true},
+      {text:"Mexico",correct:false},{text:"Cuba",correct:false},{text:"Panama",correct:false},
+      {text:"Jamaica",correct:false},{text:"Haiti",correct:false},{text:"Portugal",correct:false},
+      {text:"Spain",correct:false},{text:"Nigeria",correct:false},{text:"Honduras",correct:false},
+      {text:"Guatemala",correct:false},{text:"Costa Rica",correct:false},{text:"Dominican Republic",correct:false},
+      {text:"El Salvador",correct:false},{text:"Belize",correct:false},
     ],
   },
   {
     question: "Which of these are chemical elements (not compounds or mixtures)?",
     options: [
-      { text: "Gold",        correct: true  }, { text: "Oxygen",      correct: true  },
-      { text: "Hydrogen",    correct: true  }, { text: "Carbon",      correct: true  },
-      { text: "Iron",        correct: true  }, { text: "Helium",      correct: true  },
-      { text: "Silver",      correct: true  }, { text: "Water",       correct: false },
-      { text: "Salt",        correct: false }, { text: "Air",         correct: false },
-      { text: "Steel",       correct: false }, { text: "Bronze",      correct: false },
-      { text: "Sugar",       correct: false }, { text: "Ammonia",     correct: false },
-      { text: "Rust",        correct: false }, { text: "Vinegar",     correct: false },
-      { text: "Brass",       correct: false }, { text: "Glass",       correct: false },
-      { text: "Concrete",    correct: false }, { text: "Petroleum",   correct: false },
+      {text:"Gold",correct:true},{text:"Oxygen",correct:true},{text:"Hydrogen",correct:true},{text:"Carbon",correct:true},
+      {text:"Iron",correct:true},{text:"Helium",correct:true},{text:"Silver",correct:true},
+      {text:"Water",correct:false},{text:"Salt",correct:false},{text:"Air",correct:false},{text:"Steel",correct:false},
+      {text:"Bronze",correct:false},{text:"Sugar",correct:false},{text:"Ammonia",correct:false},{text:"Rust",correct:false},
+      {text:"Vinegar",correct:false},{text:"Brass",correct:false},{text:"Glass",correct:false},
+      {text:"Concrete",correct:false},{text:"Petroleum",correct:false},
     ],
   },
   {
     question: "Which of these animals are mammals?",
     options: [
-      { text: "Dolphin",     correct: true  }, { text: "Bat",         correct: true  },
-      { text: "Whale",       correct: true  }, { text: "Elephant",    correct: true  },
-      { text: "Platypus",    correct: true  }, { text: "Kangaroo",    correct: true  },
-      { text: "Seal",        correct: true  }, { text: "Chimpanzee",  correct: true  },
-      { text: "Eagle",       correct: false }, { text: "Crocodile",   correct: false },
-      { text: "Shark",       correct: false }, { text: "Frog",        correct: false },
-      { text: "Iguana",      correct: false }, { text: "Salmon",      correct: false },
-      { text: "Ostrich",     correct: false }, { text: "Cobra",       correct: false },
-      { text: "Tuna",        correct: false }, { text: "Salamander",  correct: false },
-      { text: "Turtle",      correct: false }, { text: "Parrot",      correct: false },
+      {text:"Dolphin",correct:true},{text:"Bat",correct:true},{text:"Whale",correct:true},{text:"Elephant",correct:true},
+      {text:"Platypus",correct:true},{text:"Kangaroo",correct:true},{text:"Seal",correct:true},{text:"Chimpanzee",correct:true},
+      {text:"Eagle",correct:false},{text:"Crocodile",correct:false},{text:"Shark",correct:false},{text:"Frog",correct:false},
+      {text:"Iguana",correct:false},{text:"Salmon",correct:false},{text:"Ostrich",correct:false},{text:"Cobra",correct:false},
+      {text:"Tuna",correct:false},{text:"Salamander",correct:false},{text:"Turtle",correct:false},{text:"Parrot",correct:false},
     ],
   },
   {
     question: "Which of these are programming languages?",
     options: [
-      { text: "Python",      correct: true  }, { text: "Rust",        correct: true  },
-      { text: "Swift",       correct: true  }, { text: "Kotlin",      correct: true  },
-      { text: "Haskell",     correct: true  }, { text: "Lua",         correct: true  },
-      { text: "Erlang",      correct: true  }, { text: "Julia",       correct: true  },
-      { text: "Elixir",      correct: true  }, { text: "Bootstrap",   correct: false },
-      { text: "React",       correct: false }, { text: "Linux",       correct: false },
-      { text: "Docker",      correct: false }, { text: "GitHub",      correct: false },
-      { text: "Webpack",     correct: false }, { text: "GraphQL",     correct: false },
-      { text: "MongoDB",     correct: false }, { text: "Kubernetes",  correct: false },
-      { text: "Figma",       correct: false }, { text: "Nginx",       correct: false },
+      {text:"Python",correct:true},{text:"Rust",correct:true},{text:"Swift",correct:true},{text:"Kotlin",correct:true},
+      {text:"Haskell",correct:true},{text:"Lua",correct:true},{text:"Erlang",correct:true},{text:"Julia",correct:true},
+      {text:"Elixir",correct:true},{text:"Bootstrap",correct:false},{text:"React",correct:false},{text:"Linux",correct:false},
+      {text:"Docker",correct:false},{text:"GitHub",correct:false},{text:"Webpack",correct:false},{text:"GraphQL",correct:false},
+      {text:"MongoDB",correct:false},{text:"Kubernetes",correct:false},{text:"Figma",correct:false},{text:"Nginx",correct:false},
     ],
   },
   {
     question: "Which of these are official languages of the United Nations?",
     options: [
-      { text: "English",     correct: true  }, { text: "French",      correct: true  },
-      { text: "Spanish",     correct: true  }, { text: "Russian",     correct: true  },
-      { text: "Arabic",      correct: true  }, { text: "Chinese",     correct: true  },
-      { text: "German",      correct: false }, { text: "Portuguese",  correct: false },
-      { text: "Japanese",    correct: false }, { text: "Italian",     correct: false },
-      { text: "Hindi",       correct: false }, { text: "Dutch",       correct: false },
-      { text: "Turkish",     correct: false }, { text: "Korean",      correct: false },
-      { text: "Persian",     correct: false }, { text: "Swahili",     correct: false },
-      { text: "Polish",      correct: false }, { text: "Swedish",     correct: false },
-      { text: "Greek",       correct: false }, { text: "Romanian",    correct: false },
+      {text:"English",correct:true},{text:"French",correct:true},{text:"Spanish",correct:true},
+      {text:"Russian",correct:true},{text:"Arabic",correct:true},{text:"Chinese",correct:true},
+      {text:"German",correct:false},{text:"Portuguese",correct:false},{text:"Japanese",correct:false},
+      {text:"Italian",correct:false},{text:"Hindi",correct:false},{text:"Dutch",correct:false},
+      {text:"Turkish",correct:false},{text:"Korean",correct:false},{text:"Persian",correct:false},
+      {text:"Swahili",correct:false},{text:"Polish",correct:false},{text:"Swedish",correct:false},
+      {text:"Greek",correct:false},{text:"Romanian",correct:false},
     ],
   },
   {
     question: "Which of these are organs in the human body?",
     options: [
-      { text: "Liver",       correct: true  }, { text: "Pancreas",    correct: true  },
-      { text: "Spleen",      correct: true  }, { text: "Thyroid",     correct: true  },
-      { text: "Appendix",    correct: true  }, { text: "Gallbladder", correct: true  },
-      { text: "Trachea",     correct: true  }, { text: "Larynx",      correct: true  },
-      { text: "Femur",       correct: false }, { text: "Tibia",       correct: false },
-      { text: "Humerus",     correct: false }, { text: "Patella",     correct: false },
-      { text: "Clavicle",    correct: false }, { text: "Fibula",      correct: false },
-      { text: "Sternum",     correct: false }, { text: "Scapula",     correct: false },
-      { text: "Radius",      correct: false }, { text: "Ulna",        correct: false },
-      { text: "Sacrum",      correct: false }, { text: "Carpals",     correct: false },
+      {text:"Liver",correct:true},{text:"Pancreas",correct:true},{text:"Spleen",correct:true},{text:"Thyroid",correct:true},
+      {text:"Appendix",correct:true},{text:"Gallbladder",correct:true},{text:"Trachea",correct:true},{text:"Larynx",correct:true},
+      {text:"Femur",correct:false},{text:"Tibia",correct:false},{text:"Humerus",correct:false},{text:"Patella",correct:false},
+      {text:"Clavicle",correct:false},{text:"Fibula",correct:false},{text:"Sternum",correct:false},{text:"Scapula",correct:false},
+      {text:"Radius",correct:false},{text:"Ulna",correct:false},{text:"Sacrum",correct:false},{text:"Carpals",correct:false},
     ],
   },
   {
     question: "Which of these films won the Academy Award for Best Picture?",
     options: [
-      { text: "Parasite (2019)",               correct: true  },
-      { text: "The Shape of Water (2017)",     correct: true  },
-      { text: "Moonlight (2016)",              correct: true  },
-      { text: "12 Years a Slave (2013)",       correct: true  },
-      { text: "The Artist (2011)",             correct: true  },
-      { text: "The King's Speech (2010)",      correct: true  },
-      { text: "No Country for Old Men (2007)", correct: true  },
-      { text: "Inception (2010)",              correct: false },
-      { text: "The Dark Knight (2008)",        correct: false },
-      { text: "Avatar (2009)",                 correct: false },
-      { text: "Interstellar (2014)",           correct: false },
-      { text: "La La Land (2016)",             correct: false },
-      { text: "Mad Max: Fury Road (2015)",     correct: false },
-      { text: "Get Out (2017)",                correct: false },
-      { text: "Roma (2018)",                   correct: false },
-      { text: "Marriage Story (2019)",         correct: false },
-      { text: "Midsommar (2019)",              correct: false },
-      { text: "The Favourite (2018)",          correct: false },
-      { text: "1917 (2019)",                   correct: false },
-      { text: "Once Upon a Time in Hollywood (2019)", correct: false },
+      {text:"Parasite (2019)",correct:true},{text:"The Shape of Water (2017)",correct:true},
+      {text:"Moonlight (2016)",correct:true},{text:"12 Years a Slave (2013)",correct:true},
+      {text:"The Artist (2011)",correct:true},{text:"The King's Speech (2010)",correct:true},
+      {text:"No Country for Old Men (2007)",correct:true},
+      {text:"Inception (2010)",correct:false},{text:"The Dark Knight (2008)",correct:false},
+      {text:"Avatar (2009)",correct:false},{text:"Interstellar (2014)",correct:false},
+      {text:"La La Land (2016)",correct:false},{text:"Mad Max: Fury Road (2015)",correct:false},
+      {text:"Get Out (2017)",correct:false},{text:"Roma (2018)",correct:false},
+      {text:"Marriage Story (2019)",correct:false},{text:"Midsommar (2019)",correct:false},
+      {text:"The Favourite (2018)",correct:false},{text:"1917 (2019)",correct:false},
+      {text:"Once Upon a Time in Hollywood (2019)",correct:false},
     ],
   },
   {
     question: "Which of these are capital cities?",
     options: [
-      { text: "Ottawa",      correct: true  }, { text: "Canberra",    correct: true  },
-      { text: "Brasília",    correct: true  }, { text: "Pretoria",    correct: true  },
-      { text: "Astana",      correct: true  }, { text: "Nairobi",     correct: true  },
-      { text: "Reykjavik",   correct: true  }, { text: "Wellington",  correct: true  },
-      { text: "Bern",        correct: true  }, { text: "Sydney",      correct: false },
-      { text: "Toronto",     correct: false }, { text: "Melbourne",   correct: false },
-      { text: "Barcelona",   correct: false }, { text: "São Paulo",   correct: false },
-      { text: "Cape Town",   correct: false }, { text: "Almaty",      correct: false },
-      { text: "Mombasa",     correct: false }, { text: "Auckland",    correct: false },
-      { text: "Geneva",      correct: false }, { text: "Zurich",      correct: false },
+      {text:"Ottawa",correct:true},{text:"Canberra",correct:true},{text:"Brasília",correct:true},
+      {text:"Pretoria",correct:true},{text:"Astana",correct:true},{text:"Nairobi",correct:true},
+      {text:"Reykjavik",correct:true},{text:"Wellington",correct:true},{text:"Bern",correct:true},
+      {text:"Sydney",correct:false},{text:"Toronto",correct:false},{text:"Melbourne",correct:false},
+      {text:"Barcelona",correct:false},{text:"São Paulo",correct:false},{text:"Cape Town",correct:false},
+      {text:"Almaty",correct:false},{text:"Mombasa",correct:false},{text:"Auckland",correct:false},
+      {text:"Geneva",correct:false},{text:"Zurich",correct:false},
     ],
   },
   {
     question: "Which of these are Shakespeare plays?",
     options: [
-      { text: "Othello",            correct: true  }, { text: "Macbeth",           correct: true  },
-      { text: "The Tempest",        correct: true  }, { text: "Coriolanus",        correct: true  },
-      { text: "Cymbeline",          correct: true  }, { text: "Pericles",          correct: true  },
-      { text: "Timon of Athens",    correct: true  }, { text: "The Winter's Tale", correct: true  },
-      { text: "Waiting for Godot",  correct: false }, { text: "The Cherry Orchard",correct: false },
-      { text: "A Doll's House",     correct: false }, { text: "Death of a Salesman",correct: false },
-      { text: "The Crucible",       correct: false }, { text: "Pygmalion",         correct: false },
-      { text: "An Inspector Calls", correct: false }, { text: "Endgame",           correct: false },
-      { text: "The Glass Menagerie",correct: false }, { text: "Long Day's Journey", correct: false },
-      { text: "Cat on a Hot Tin Roof",correct: false},{ text: "Our Town",          correct: false },
+      {text:"Othello",correct:true},{text:"Macbeth",correct:true},{text:"The Tempest",correct:true},
+      {text:"Coriolanus",correct:true},{text:"Cymbeline",correct:true},{text:"Pericles",correct:true},
+      {text:"Timon of Athens",correct:true},{text:"The Winter's Tale",correct:true},
+      {text:"Waiting for Godot",correct:false},{text:"The Cherry Orchard",correct:false},
+      {text:"A Doll's House",correct:false},{text:"Death of a Salesman",correct:false},
+      {text:"The Crucible",correct:false},{text:"Pygmalion",correct:false},
+      {text:"An Inspector Calls",correct:false},{text:"Endgame",correct:false},
+      {text:"The Glass Menagerie",correct:false},{text:"Long Day's Journey",correct:false},
+      {text:"Cat on a Hot Tin Roof",correct:false},{text:"Our Town",correct:false},
     ],
   },
 ];
 
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 // APP STATE
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 
-let questionQueue = [];   // shuffled indices into QUESTIONS
-let currentQIndex = 0;    // position in questionQueue
-let gameState = null;     // current createGame() state
-let totalScore = 0;
-let wonCount = 0;
+let questionQueue = [];
+let currentQIndex = 0;
+let gameState     = null;
+let totalScore    = 0;
+let wonCount      = 0;
 const MAX_ATTEMPTS = 3;
 
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 // SCREEN MANAGEMENT
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 
 function showScreen(id) {
   ['start-screen','game-screen','final-screen'].forEach(s => {
     document.getElementById(s).style.display = 'none';
   });
-  document.getElementById(id).style.display = id === 'game-screen' ? 'block' : id === 'start-screen' ? 'block' : 'block';
+  document.getElementById(id).style.display = 'block';
 }
 
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 // GAME FLOW
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 
 function startGame() {
-  questionQueue = shuffleArray([...Array.from({ length: QUESTIONS.length }, (_, i) => i)]);
+  questionQueue = shuffleArray(Array.from({length: QUESTIONS.length}, (_,i) => i));
   currentQIndex = 0;
-  totalScore = 0;
-  wonCount = 0;
+  totalScore    = 0;
+  wonCount      = 0;
   showScreen('game-screen');
   loadQuestion();
 }
 
 function loadQuestion() {
-  const qData = QUESTIONS[questionQueue[currentQIndex]];
-  gameState = createGame(qData, MAX_ATTEMPTS);
+  gameState = createGame(QUESTIONS[questionQueue[currentQIndex]], MAX_ATTEMPTS);
 
-  // Hide game-over overlay
-  document.getElementById('game-over').classList.remove('visible');
+  document.getElementById('round-result').classList.remove('visible');
   document.getElementById('actions-row').style.display = 'flex';
-  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('legend').style.display      = 'none';
+  hideFeedback();
 
-  // Progress
   const qNum = currentQIndex + 1;
   document.getElementById('progress-label').textContent = `Question ${qNum} / ${QUESTIONS.length}`;
-  document.getElementById('progress-fill').style.width = `${(qNum / QUESTIONS.length) * 100}%`;
+  document.getElementById('progress-fill').style.width  = `${(qNum / QUESTIONS.length) * 100}%`;
+  document.getElementById('header-score').textContent   = totalScore.toLocaleString();
+  document.getElementById('question-text').textContent  = gameState.question;
 
-  // Header score
-  document.getElementById('header-score').textContent = totalScore.toLocaleString();
-
-  // Question text
-  document.getElementById('question-text').textContent = gameState.question;
-
-  // Pills
   updatePills();
-
-  // Render options
   renderOptions();
 }
 
 function updatePills() {
-  document.getElementById('correct-count-pill').textContent =
-    `Find ${gameState.correctCount} correct answer${gameState.correctCount > 1 ? 's' : ''}`;
-  const remaining = MAX_ATTEMPTS - gameState.attemptsUsed;
-  document.getElementById('attempts-pill').textContent =
-    `${remaining} attempt${remaining !== 1 ? 's' : ''} left`;
-  document.getElementById('selected-pill').textContent =
-    `${gameState.selected.size} / ${gameState.correctCount} selected`;
+  const hits    = gameState.hitIndices.size;
+  const needed  = gameState.correctCount - hits;
+  const sel     = gameState.selected.size;
+  const rem     = MAX_ATTEMPTS - gameState.attemptsUsed;
+
+  document.getElementById('pill-target').textContent =
+    hits === 0
+      ? `Find ${gameState.correctCount} correct answer${gameState.correctCount > 1 ? 's' : ''}`
+      : `Find ${needed} more`;
+
+  const pillConfirmed = document.getElementById('pill-confirmed');
+  if (hits > 0) {
+    pillConfirmed.style.display = '';
+    pillConfirmed.textContent   = `${hits} confirmed ✓`;
+  } else {
+    pillConfirmed.style.display = 'none';
+  }
+
+  document.getElementById('pill-selected').textContent =
+    `${sel} / ${needed} selected`;
+
+  document.getElementById('pill-attempts').textContent =
+    `${rem} attempt${rem !== 1 ? 's' : ''} left`;
 }
 
 function renderOptions(revealMode = false) {
   const grid = document.getElementById('options-grid');
   grid.innerHTML = '';
 
-  const correctIdx = getCorrectIndices(gameState);
-
   gameState.options.forEach((opt, i) => {
     const btn = document.createElement('button');
-    btn.className = 'option-btn';
+    btn.className   = 'option-btn';
     btn.textContent = opt.text;
     btn.dataset.index = i;
 
     if (revealMode) {
       btn.disabled = true;
-      if (opt.correct) {
-        btn.classList.add('reveal-correct');
-      } else if (gameState.selected && gameState.selected.has(i)) {
-        // was wrongly selected (shouldn't happen post-clear, but just in case)
-        btn.classList.add('reveal-wrong');
-      }
+      if (opt.correct)                        btn.classList.add('reveal-correct');
+      else if (gameState.missIndices.has(i))  btn.classList.add('reveal-wrong');
+      else                                    btn.classList.add('reveal-neutral');
     } else {
-      if (gameState.selected.has(i)) btn.classList.add('selected');
-      btn.disabled = gameState.status !== 'playing';
-      btn.addEventListener('click', () => onOptionClick(i));
+      if      (gameState.hitIndices.has(i))   { btn.classList.add('hit');  btn.disabled = true; }
+      else if (gameState.missIndices.has(i))  { btn.classList.add('miss'); btn.disabled = true; }
+      else if (gameState.selected.has(i))     { btn.classList.add('selected'); }
+
+      if (!btn.disabled) btn.addEventListener('click', () => onOptionClick(i));
     }
 
     grid.appendChild(btn);
@@ -812,22 +625,19 @@ function renderOptions(revealMode = false) {
 }
 
 function onOptionClick(index) {
+  const prev = gameState.selected.size;
   gameState = toggleOption(gameState, index);
-  updatePills();
+  if (gameState.selected.size === prev) return; // no change (cap hit)
 
-  // Update just this button's visual
   const btn = document.querySelector(`.option-btn[data-index="${index}"]`);
-  if (btn) {
-    btn.classList.toggle('selected', gameState.selected.has(index));
-  }
+  if (btn) btn.classList.toggle('selected', gameState.selected.has(index));
+  updatePills();
 }
 
 function clearSelection() {
   if (gameState.status !== 'playing') return;
-  gameState.selected.forEach(i => {
-    gameState = toggleOption(gameState, i);
-  });
-  // Re-render (easier than tracking each)
+  // Deselect all currently selected
+  for (const i of [...gameState.selected]) gameState = toggleOption(gameState, i);
   renderOptions();
   updatePills();
   hideFeedback();
@@ -837,117 +647,92 @@ function handleSubmit() {
   const { newState, error } = submitAttempt(gameState);
   gameState = newState;
 
-  if (error) {
-    showFeedback(error, 'error');
-    return;
-  }
-
+  if (error) { showFeedback(error, 'error'); return; }
   hideFeedback();
 
-  if (gameState.status === 'won') {
-    endRound(true);
-  } else if (gameState.status === 'lost') {
-    endRound(false);
+  if (gameState.status === 'won' || gameState.status === 'lost') {
+    endRound(gameState.status === 'won');
   } else {
-    // Wrong but still playing
-    const remaining = MAX_ATTEMPTS - gameState.attemptsUsed;
-    showFeedback(
-      `Not quite — ${remaining} attempt${remaining !== 1 ? 's' : ''} left. Try again!`,
-      'warn'
-    );
+    // Wrong attempt — show feedback, reveal hit/miss state, legend
+    const newHits   = gameState.hitIndices.size;
+    const newMisses = gameState.missIndices.size;
+    const rem       = MAX_ATTEMPTS - gameState.attemptsUsed;
+
+    let msg = '';
+    if (newHits > 0 && newMisses > 0) msg = `${newHits} confirmed ✓ — ${newMisses} ruled out ✗ — ${rem} attempt${rem!==1?'s':''} left`;
+    else if (newHits > 0)             msg = `${newHits} confirmed ✓ — ${rem} attempt${rem!==1?'s':''} left`;
+    else                              msg = `None of those were correct — ${rem} attempt${rem!==1?'s':''} left`;
+
+    showFeedback(msg, 'warn');
+    document.getElementById('legend').style.display = '';
     updatePills();
     renderOptions();
   }
 }
 
 function endRound(won) {
-  const roundScore = calculateScore(gameState.attemptsUsed, MAX_ATTEMPTS, won);
+  const roundScore = calculateScore(gameState.attemptsUsed, won);
   if (won) wonCount++;
   totalScore += roundScore;
-
-  // Update header
   document.getElementById('header-score').textContent = totalScore.toLocaleString();
 
-  // Show reveal
+  // Full reveal
   renderOptions(true);
-
-  // Hide action buttons
   document.getElementById('actions-row').style.display = 'none';
+  document.getElementById('legend').style.display      = 'none';
   hideFeedback();
 
-  // Fill game-over section
-  const go = document.getElementById('game-over');
-  document.getElementById('result-emoji').textContent = won ? '🎉' : '😔';
+  document.getElementById('result-emoji').textContent  = won ? '🎉' : '😔';
   const titleEl = document.getElementById('result-title');
   titleEl.textContent = won ? 'Correct!' : 'Out of attempts';
-  titleEl.className = `result-title ${won ? 'won' : 'lost'}`;
+  titleEl.className   = `result-title ${won ? 'won' : 'lost'}`;
   document.getElementById('result-sub').textContent = won
-    ? `You got it in ${gameState.attemptsUsed} attempt${gameState.attemptsUsed > 1 ? 's' : ''}!`
+    ? `Nailed it in ${gameState.attemptsUsed} attempt${gameState.attemptsUsed > 1 ? 's' : ''}!`
     : 'The correct answers are highlighted above.';
-  document.getElementById('round-score-display').textContent = `+${roundScore.toLocaleString()}`;
-  document.getElementById('round-score-label').textContent = 'points this round';
+  document.getElementById('round-score').textContent = `+${roundScore.toLocaleString()}`;
 
-  // Stats
-  const statsRow = document.getElementById('stats-row');
-  statsRow.innerHTML = `
+  document.getElementById('stats-row').innerHTML = `
     <div class="stat-box"><div class="stat-num">${gameState.attemptsUsed}</div><div class="stat-lbl">Attempts used</div></div>
     <div class="stat-box"><div class="stat-num">${totalScore.toLocaleString()}</div><div class="stat-lbl">Total score</div></div>
-    <div class="stat-box"><div class="stat-num">${wonCount}/${currentQIndex + 1}</div><div class="stat-lbl">Questions won</div></div>
+    <div class="stat-box"><div class="stat-num">${wonCount}/${currentQIndex+1}</div><div class="stat-lbl">Won</div></div>
   `;
 
   const isLast = currentQIndex >= QUESTIONS.length - 1;
-  const nextBtn = document.getElementById('next-btn');
-  nextBtn.textContent = isLast ? 'See Final Score' : 'Next Question →';
-
-  go.classList.add('visible');
+  document.getElementById('next-btn').textContent = isLast ? 'See Final Score' : 'Next Question →';
+  document.getElementById('round-result').classList.add('visible');
 }
 
 function nextQuestion() {
   currentQIndex++;
-  if (currentQIndex >= QUESTIONS.length) {
-    showFinalScore();
-  } else {
-    loadQuestion();
-  }
+  if (currentQIndex >= QUESTIONS.length) showFinalScore();
+  else loadQuestion();
 }
 
 function showFinalScore() {
   showScreen('final-screen');
-  document.getElementById('final-score-display').textContent = totalScore.toLocaleString();
-
+  document.getElementById('final-score').textContent = totalScore.toLocaleString();
   const pct = Math.round((wonCount / QUESTIONS.length) * 100);
-  let verdict = '';
-  if (pct === 100) verdict = '🏆 Perfect game!';
-  else if (pct >= 80) verdict = '🌟 Excellent!';
-  else if (pct >= 60) verdict = '👍 Nice work!';
-  else if (pct >= 40) verdict = '📚 Keep practising!';
-  else verdict = '🎯 Better luck next time!';
-
+  const verdict = pct===100 ? '🏆 Perfect game!' : pct>=80 ? '🌟 Excellent!' : pct>=60 ? '👍 Nice work!' : pct>=40 ? '📚 Keep practising!' : '🎯 Better luck next time!';
   document.getElementById('final-stats').innerHTML = `
     <div class="stat-box"><div class="stat-num">${wonCount} / ${QUESTIONS.length}</div><div class="stat-lbl">Questions won</div></div>
     <div class="stat-box"><div class="stat-num">${pct}%</div><div class="stat-lbl">Accuracy</div></div>
     <div class="stat-box"><div class="stat-num">${totalScore.toLocaleString()}</div><div class="stat-lbl">Final score</div></div>
-    <div class="stat-box" style="flex-basis:100%;text-align:center;"><div class="stat-num" style="font-size:1.1rem;">${verdict}</div></div>
+    <div class="stat-box" style="flex-basis:100%;"><div class="stat-num" style="font-size:1.1rem;">${verdict}</div></div>
   `;
 }
 
-function restartGame() {
-  showScreen('start-screen');
-}
+function restartGame() { showScreen('start-screen'); }
 
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 // UI HELPERS
-// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 
 function showFeedback(msg, type) {
   const el = document.getElementById('feedback');
   el.textContent = msg;
-  el.className = `feedback visible ${type}`;
+  el.className   = `feedback visible ${type}`;
 }
-
-function hideFeedback() {
-  document.getElementById('feedback').className = 'feedback';
-}
+function hideFeedback() { document.getElementById('feedback').className = 'feedback'; }
 </script>
 </body>
 </html>
