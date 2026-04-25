@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pick the Right Ones!</title>
+<style>
+  /* ── Reset & base ─────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0f1117;
+    --surface:   #1a1d27;
+    --surface2:  #222534;
+    --border:    #2e3246;
+    --accent:    #6c63ff;
+    --accent2:   #a78bfa;
+    --green:     #22c55e;
+    --red:       #ef4444;
+    --yellow:    #f59e0b;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --radius:    12px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 60px;
+  }
+
+  /* ── Header ───────────────────────────────── */
+  header {
+    width: 100%;
+    max-width: 860px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .score-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 18px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent2);
+  }
+
+  /* ── Card ─────────────────────────────────── */
+  .card {
+    width: 100%;
+    max-width: 860px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px 32px 28px;
+  }
+
+  /* ── Progress bar ────────────────────────── */
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+
+  /* ── Question ─────────────────────────────── */
+  .question-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.45;
+    margin-bottom: 10px;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .pill.attempts { color: var(--yellow); border-color: var(--yellow); }
+  .pill.correct-count { color: var(--accent2); border-color: var(--accent); }
+  .pill.selected-count { color: var(--text); }
+
+  /* ── Options grid ────────────────────────── */
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .option-btn {
+    position: relative;
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    line-height: 1.3;
+    user-select: none;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: #1e2035;
+    transform: translateY(-1px);
+  }
+
+  .option-btn.selected {
+    border-color: var(--accent);
+    background: #1a1a40;
+  }
+
+  .option-btn.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 0.75rem;
+    color: var(--accent2);
+    font-weight: 900;
+  }
+
+  /* Reveal states */
+  .option-btn.reveal-correct {
+    border-color: var(--green);
+    background: #14291e;
+    color: var(--green);
+  }
+
+  .option-btn.reveal-correct::after {
+    content: '✓';
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 0.75rem;
+    color: var(--green);
+    font-weight: 900;
+  }
+
+  .option-btn.reveal-wrong {
+    border-color: var(--red);
+    background: #2a1414;
+    color: var(--red);
+    text-decoration: line-through;
+  }
+
+  .option-btn.reveal-wrong::after {
+    content: '✗';
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 0.75rem;
+    color: var(--red);
+    font-weight: 900;
+  }
+
+  .option-btn:disabled { cursor: default; transform: none; }
+
+  /* ── Feedback banner ─────────────────────── */
+  .feedback {
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+    display: none;
+  }
+
+  .feedback.visible { display: block; }
+  .feedback.error { background: #2a1414; border: 1px solid var(--red); color: var(--red); }
+  .feedback.info  { background: #1a1a3a; border: 1px solid var(--accent); color: var(--accent2); }
+  .feedback.warn  { background: #2a2010; border: 1px solid var(--yellow); color: var(--yellow); }
+
+  /* ── Actions row ─────────────────────────── */
+  .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 13px 20px;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    color: #fff;
+  }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Game-over overlay ───────────────────── */
+  #game-over {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px 0 8px;
+  }
+
+  #game-over.visible { display: flex; }
+
+  .result-emoji { font-size: 3.5rem; margin-bottom: 12px; line-height: 1; }
+
+  .result-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .result-title.won { color: var(--green); }
+  .result-title.lost { color: var(--red); }
+
+  .result-sub {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+
+  .score-display {
+    font-size: 3rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+
+  .score-label { color: var(--muted); font-size: 0.8rem; margin-bottom: 24px; }
+
+  .stats-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .stat-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 22px;
+    text-align: center;
+  }
+
+  .stat-num { font-size: 1.4rem; font-weight: 800; color: var(--accent2); }
+  .stat-lbl { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+  /* ── Start / menu screen ─────────────────── */
+  #start-screen {
+    width: 100%;
+    max-width: 860px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 48px 32px;
+    text-align: center;
+  }
+
+  .start-title {
+    font-size: 2.4rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .start-sub {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  .rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 36px;
+    text-align: left;
+  }
+
+  .rule-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+
+  .rule-icon { font-size: 1.4rem; margin-bottom: 6px; }
+  .rule-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; }
+  .rule-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ START SCREEN ══════════════════ -->
+<div id="start-screen">
+  <div class="start-title">Pick the Right Ones!</div>
+  <p class="start-sub">
+    Each round you'll get a question and <strong>20 options</strong>.<br>
+    You need to find all the correct ones — we'll tell you how many to find.
+  </p>
+
+  <div class="rules-grid">
+    <div class="rule-box">
+      <div class="rule-icon">🎯</div>
+      <div class="rule-title">Select exactly the right count</div>
+      <div class="rule-desc">Each question tells you how many correct answers to find.</div>
+    </div>
+    <div class="rule-box">
+      <div class="rule-icon">🔁</div>
+      <div class="rule-title">3 attempts per question</div>
+      <div class="rule-desc">You have 3 tries to get it right before the answer is revealed.</div>
+    </div>
+    <div class="rule-box">
+      <div class="rule-icon">⚡</div>
+      <div class="rule-title">Score by speed</div>
+      <div class="rule-desc">1st try = 1000 pts · 2nd = 800 pts · 3rd = 600 pts</div>
+    </div>
+    <div class="rule-box">
+      <div class="rule-icon">📚</div>
+      <div class="rule-title">10 questions</div>
+      <div class="rule-desc">General knowledge across science, geography, culture, and more.</div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="startGame()" style="max-width:260px;margin:0 auto;">
+    Start Game
+  </button>
+</div>
+
+<!-- ══════════════════ GAME SCREEN ══════════════════ -->
+<div id="game-screen" style="display:none;width:100%;max-width:860px;">
+  <header>
+    <div class="logo">Pick the Right Ones!</div>
+    <div class="score-badge">Score: <span id="header-score">0</span></div>
+  </header>
+
+  <div class="card" id="question-card">
+    <!-- Progress -->
+    <div class="progress-row">
+      <span id="progress-label">Question 1 / 10</span>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:10%"></div>
+      </div>
+    </div>
+
+    <!-- Question -->
+    <div class="question-text" id="question-text"></div>
+
+    <div class="meta-row">
+      <span class="pill correct-count" id="correct-count-pill"></span>
+      <span class="pill attempts" id="attempts-pill"></span>
+      <span class="pill selected-count" id="selected-pill">0 selected</span>
+    </div>
+
+    <!-- Options -->
+    <div class="options-grid" id="options-grid"></div>
+
+    <!-- Feedback -->
+    <div class="feedback" id="feedback"></div>
+
+    <!-- Actions -->
+    <div class="actions" id="actions-row">
+      <button class="btn btn-secondary" onclick="clearSelection()">Clear</button>
+      <button class="btn btn-primary" onclick="handleSubmit()">Submit Answer</button>
+    </div>
+
+    <!-- Game-over overlay (per question) -->
+    <div id="game-over">
+      <div class="result-emoji" id="result-emoji"></div>
+      <div class="result-title" id="result-title"></div>
+      <div class="result-sub" id="result-sub"></div>
+      <div class="score-display" id="round-score-display"></div>
+      <div class="score-label" id="round-score-label"></div>
+      <div class="stats-row" id="stats-row"></div>
+      <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()" style="max-width:220px;"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ FINAL SCORE SCREEN ══════════════════ -->
+<div id="final-screen" style="display:none;width:100%;max-width:860px;text-align:center;">
+  <header>
+    <div class="logo">Pick the Right Ones!</div>
+    <div></div>
+  </header>
+  <div class="card">
+    <div style="padding:20px 0;">
+      <div style="font-size:3.5rem;margin-bottom:12px;">🏆</div>
+      <div style="font-size:1.8rem;font-weight:900;margin-bottom:8px;">Game Complete!</div>
+      <div style="color:var(--muted);font-size:0.95rem;margin-bottom:28px;">Here's how you did across all 10 questions</div>
+
+      <div class="score-display" id="final-score-display"></div>
+      <div style="color:var(--muted);font-size:0.85rem;margin-bottom:28px;">Total Score</div>
+
+      <div class="stats-row" style="justify-content:center;" id="final-stats"></div>
+
+      <button class="btn btn-primary" onclick="restartGame()" style="max-width:220px;margin:0 auto;">
+        Play Again
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════
+// GAME LOGIC  (inlined from game-logic.js)
+// ════════════════════════════════════════════════════
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function createGame(questionData, maxAttempts = 3) {
+  if (!questionData || !Array.isArray(questionData.options)) throw new Error('Invalid question data');
+  if (questionData.options.length !== 20) throw new Error('Expected 20 options');
+  const correctCount = questionData.options.filter(o => o.correct).length;
+  if (correctCount < 1) throw new Error('No correct answers');
+  const shuffled = shuffleArray([...questionData.options]);
+  return {
+    question: questionData.question,
+    options: shuffled,
+    correctCount,
+    maxAttempts,
+    attemptsUsed: 0,
+    selected: new Set(),
+    status: 'playing',
+    lastAttemptResult: null,
+  };
+}
+
+function toggleOption(state, index) {
+  if (state.status !== 'playing') return state;
+  if (index < 0 || index >= state.options.length) return state;
+  const selected = new Set(state.selected);
+  selected.has(index) ? selected.delete(index) : selected.add(index);
+  return { ...state, selected };
+}
+
+function submitAttempt(state) {
+  if (state.status !== 'playing') return { newState: state, error: 'Game is already over' };
+  if (state.selected.size !== state.correctCount) {
+    return { newState: state, error: `Select exactly ${state.correctCount} answer${state.correctCount > 1 ? 's' : ''} before submitting` };
+  }
+  const attemptsUsed = state.attemptsUsed + 1;
+  const correct = state.options.map((opt, i) => state.selected.has(i) === opt.correct);
+  const allCorrect = correct.every(Boolean);
+  let status = state.status;
+  if (allCorrect) status = 'won';
+  else if (attemptsUsed >= state.maxAttempts) status = 'lost';
+  return {
+    newState: { ...state, attemptsUsed, selected: new Set(), status, lastAttemptResult: { correct, allCorrect } },
+    error: null,
+  };
+}
+
+function calculateScore(attemptsUsed, maxAttempts, won) {
+  if (!won) return 0;
+  return Math.max(1000 - (attemptsUsed - 1) * 200, 100);
+}
+
+function getCorrectIndices(state) {
+  return state.options.map((opt, i) => opt.correct ? i : null).filter(i => i !== null);
+}
+
+// ════════════════════════════════════════════════════
+// QUESTION BANK  (inlined from questions.js)
+// ════════════════════════════════════════════════════
+
+const QUESTIONS = [
+  {
+    question: "Which of these are planets in our solar system?",
+    options: [
+      { text: "Mercury",   correct: true  }, { text: "Venus",     correct: true  },
+      { text: "Earth",     correct: true  }, { text: "Mars",      correct: true  },
+      { text: "Jupiter",   correct: true  }, { text: "Saturn",    correct: true  },
+      { text: "Uranus",    correct: true  }, { text: "Neptune",   correct: true  },
+      { text: "Pluto",     correct: false }, { text: "Ceres",     correct: false },
+      { text: "Europa",    correct: false }, { text: "Titan",     correct: false },
+      { text: "Ganymede",  correct: false }, { text: "Io",        correct: false },
+      { text: "Eris",      correct: false }, { text: "Makemake",  correct: false },
+      { text: "Haumea",    correct: false }, { text: "Triton",    correct: false },
+      { text: "Callisto",  correct: false }, { text: "Phobos",    correct: false },
+    ],
+  },
+  {
+    question: "Which of these countries are in South America?",
+    options: [
+      { text: "Brazil",      correct: true  }, { text: "Argentina",   correct: true  },
+      { text: "Colombia",    correct: true  }, { text: "Chile",       correct: true  },
+      { text: "Peru",        correct: true  }, { text: "Ecuador",     correct: true  },
+      { text: "Mexico",      correct: false }, { text: "Panama",      correct: false },
+      { text: "Cuba",        correct: false }, { text: "Costa Rica",  correct: false },
+      { text: "Portugal",    correct: false }, { text: "Spain",       correct: false },
+      { text: "Nigeria",     correct: false }, { text: "Bolivia",     correct: false },
+      { text: "Paraguay",    correct: false }, { text: "Uruguay",     correct: false },
+      { text: "Venezuela",   correct: false }, { text: "Guyana",      correct: false },
+      { text: "Suriname",    correct: false }, { text: "French Guiana", correct: false },
+    ],
+  },
+  {
+    question: "Which of these are chemical elements (not compounds or mixtures)?",
+    options: [
+      { text: "Gold",        correct: true  }, { text: "Oxygen",      correct: true  },
+      { text: "Hydrogen",    correct: true  }, { text: "Carbon",      correct: true  },
+      { text: "Iron",        correct: true  }, { text: "Helium",      correct: true  },
+      { text: "Silver",      correct: true  }, { text: "Water",       correct: false },
+      { text: "Salt",        correct: false }, { text: "Air",         correct: false },
+      { text: "Steel",       correct: false }, { text: "Bronze",      correct: false },
+      { text: "Sugar",       correct: false }, { text: "Ammonia",     correct: false },
+      { text: "Rust",        correct: false }, { text: "Vinegar",     correct: false },
+      { text: "Brass",       correct: false }, { text: "Glass",       correct: false },
+      { text: "Concrete",    correct: false }, { text: "Petroleum",   correct: false },
+    ],
+  },
+  {
+    question: "Which of these animals are mammals?",
+    options: [
+      { text: "Dolphin",     correct: true  }, { text: "Bat",         correct: true  },
+      { text: "Whale",       correct: true  }, { text: "Elephant",    correct: true  },
+      { text: "Platypus",    correct: true  }, { text: "Kangaroo",    correct: true  },
+      { text: "Seal",        correct: true  }, { text: "Chimpanzee",  correct: true  },
+      { text: "Eagle",       correct: false }, { text: "Crocodile",   correct: false },
+      { text: "Shark",       correct: false }, { text: "Frog",        correct: false },
+      { text: "Iguana",      correct: false }, { text: "Salmon",      correct: false },
+      { text: "Ostrich",     correct: false }, { text: "Cobra",       correct: false },
+      { text: "Tuna",        correct: false }, { text: "Salamander",  correct: false },
+      { text: "Turtle",      correct: false }, { text: "Parrot",      correct: false },
+    ],
+  },
+  {
+    question: "Which of these are programming languages?",
+    options: [
+      { text: "Python",      correct: true  }, { text: "Rust",        correct: true  },
+      { text: "Swift",       correct: true  }, { text: "Kotlin",      correct: true  },
+      { text: "Haskell",     correct: true  }, { text: "Lua",         correct: true  },
+      { text: "Erlang",      correct: true  }, { text: "Julia",       correct: true  },
+      { text: "Elixir",      correct: true  }, { text: "Bootstrap",   correct: false },
+      { text: "React",       correct: false }, { text: "Linux",       correct: false },
+      { text: "Docker",      correct: false }, { text: "GitHub",      correct: false },
+      { text: "Webpack",     correct: false }, { text: "GraphQL",     correct: false },
+      { text: "MongoDB",     correct: false }, { text: "Kubernetes",  correct: false },
+      { text: "Figma",       correct: false }, { text: "Nginx",       correct: false },
+    ],
+  },
+  {
+    question: "Which of these are official languages of the United Nations?",
+    options: [
+      { text: "English",     correct: true  }, { text: "French",      correct: true  },
+      { text: "Spanish",     correct: true  }, { text: "Russian",     correct: true  },
+      { text: "Arabic",      correct: true  }, { text: "Chinese",     correct: true  },
+      { text: "German",      correct: false }, { text: "Portuguese",  correct: false },
+      { text: "Japanese",    correct: false }, { text: "Italian",     correct: false },
+      { text: "Hindi",       correct: false }, { text: "Dutch",       correct: false },
+      { text: "Turkish",     correct: false }, { text: "Korean",      correct: false },
+      { text: "Persian",     correct: false }, { text: "Swahili",     correct: false },
+      { text: "Polish",      correct: false }, { text: "Swedish",     correct: false },
+      { text: "Greek",       correct: false }, { text: "Romanian",    correct: false },
+    ],
+  },
+  {
+    question: "Which of these are organs in the human body?",
+    options: [
+      { text: "Liver",       correct: true  }, { text: "Pancreas",    correct: true  },
+      { text: "Spleen",      correct: true  }, { text: "Thyroid",     correct: true  },
+      { text: "Appendix",    correct: true  }, { text: "Gallbladder", correct: true  },
+      { text: "Trachea",     correct: true  }, { text: "Larynx",      correct: true  },
+      { text: "Femur",       correct: false }, { text: "Tibia",       correct: false },
+      { text: "Humerus",     correct: false }, { text: "Patella",     correct: false },
+      { text: "Clavicle",    correct: false }, { text: "Fibula",      correct: false },
+      { text: "Sternum",     correct: false }, { text: "Scapula",     correct: false },
+      { text: "Radius",      correct: false }, { text: "Ulna",        correct: false },
+      { text: "Sacrum",      correct: false }, { text: "Carpals",     correct: false },
+    ],
+  },
+  {
+    question: "Which of these films won the Academy Award for Best Picture?",
+    options: [
+      { text: "Parasite (2019)",               correct: true  },
+      { text: "The Shape of Water (2017)",     correct: true  },
+      { text: "Moonlight (2016)",              correct: true  },
+      { text: "12 Years a Slave (2013)",       correct: true  },
+      { text: "The Artist (2011)",             correct: true  },
+      { text: "The King's Speech (2010)",      correct: true  },
+      { text: "No Country for Old Men (2007)", correct: true  },
+      { text: "Inception (2010)",              correct: false },
+      { text: "The Dark Knight (2008)",        correct: false },
+      { text: "Avatar (2009)",                 correct: false },
+      { text: "Interstellar (2014)",           correct: false },
+      { text: "La La Land (2016)",             correct: false },
+      { text: "Mad Max: Fury Road (2015)",     correct: false },
+      { text: "Get Out (2017)",                correct: false },
+      { text: "Roma (2018)",                   correct: false },
+      { text: "Marriage Story (2019)",         correct: false },
+      { text: "Midsommar (2019)",              correct: false },
+      { text: "The Favourite (2018)",          correct: false },
+      { text: "1917 (2019)",                   correct: false },
+      { text: "Once Upon a Time in Hollywood (2019)", correct: false },
+    ],
+  },
+  {
+    question: "Which of these are capital cities?",
+    options: [
+      { text: "Ottawa",      correct: true  }, { text: "Canberra",    correct: true  },
+      { text: "Brasília",    correct: true  }, { text: "Pretoria",    correct: true  },
+      { text: "Astana",      correct: true  }, { text: "Nairobi",     correct: true  },
+      { text: "Reykjavik",   correct: true  }, { text: "Wellington",  correct: true  },
+      { text: "Bern",        correct: true  }, { text: "Sydney",      correct: false },
+      { text: "Toronto",     correct: false }, { text: "Melbourne",   correct: false },
+      { text: "Barcelona",   correct: false }, { text: "São Paulo",   correct: false },
+      { text: "Cape Town",   correct: false }, { text: "Almaty",      correct: false },
+      { text: "Mombasa",     correct: false }, { text: "Auckland",    correct: false },
+      { text: "Geneva",      correct: false }, { text: "Zurich",      correct: false },
+    ],
+  },
+  {
+    question: "Which of these are Shakespeare plays?",
+    options: [
+      { text: "Othello",            correct: true  }, { text: "Macbeth",           correct: true  },
+      { text: "The Tempest",        correct: true  }, { text: "Coriolanus",        correct: true  },
+      { text: "Cymbeline",          correct: true  }, { text: "Pericles",          correct: true  },
+      { text: "Timon of Athens",    correct: true  }, { text: "The Winter's Tale", correct: true  },
+      { text: "Waiting for Godot",  correct: false }, { text: "The Cherry Orchard",correct: false },
+      { text: "A Doll's House",     correct: false }, { text: "Death of a Salesman",correct: false },
+      { text: "The Crucible",       correct: false }, { text: "Pygmalion",         correct: false },
+      { text: "An Inspector Calls", correct: false }, { text: "Endgame",           correct: false },
+      { text: "The Glass Menagerie",correct: false }, { text: "Long Day's Journey", correct: false },
+      { text: "Cat on a Hot Tin Roof",correct: false},{ text: "Our Town",          correct: false },
+    ],
+  },
+];
+
+// ════════════════════════════════════════════════════
+// APP STATE
+// ════════════════════════════════════════════════════
+
+let questionQueue = [];   // shuffled indices into QUESTIONS
+let currentQIndex = 0;    // position in questionQueue
+let gameState = null;     // current createGame() state
+let totalScore = 0;
+let wonCount = 0;
+const MAX_ATTEMPTS = 3;
+
+// ════════════════════════════════════════════════════
+// SCREEN MANAGEMENT
+// ════════════════════════════════════════════════════
+
+function showScreen(id) {
+  ['start-screen','game-screen','final-screen'].forEach(s => {
+    document.getElementById(s).style.display = 'none';
+  });
+  document.getElementById(id).style.display = id === 'game-screen' ? 'block' : id === 'start-screen' ? 'block' : 'block';
+}
+
+// ════════════════════════════════════════════════════
+// GAME FLOW
+// ════════════════════════════════════════════════════
+
+function startGame() {
+  questionQueue = shuffleArray([...Array.from({ length: QUESTIONS.length }, (_, i) => i)]);
+  currentQIndex = 0;
+  totalScore = 0;
+  wonCount = 0;
+  showScreen('game-screen');
+  loadQuestion();
+}
+
+function loadQuestion() {
+  const qData = QUESTIONS[questionQueue[currentQIndex]];
+  gameState = createGame(qData, MAX_ATTEMPTS);
+
+  // Hide game-over overlay
+  document.getElementById('game-over').classList.remove('visible');
+  document.getElementById('actions-row').style.display = 'flex';
+  document.getElementById('feedback').className = 'feedback';
+
+  // Progress
+  const qNum = currentQIndex + 1;
+  document.getElementById('progress-label').textContent = `Question ${qNum} / ${QUESTIONS.length}`;
+  document.getElementById('progress-fill').style.width = `${(qNum / QUESTIONS.length) * 100}%`;
+
+  // Header score
+  document.getElementById('header-score').textContent = totalScore.toLocaleString();
+
+  // Question text
+  document.getElementById('question-text').textContent = gameState.question;
+
+  // Pills
+  updatePills();
+
+  // Render options
+  renderOptions();
+}
+
+function updatePills() {
+  document.getElementById('correct-count-pill').textContent =
+    `Find ${gameState.correctCount} correct answer${gameState.correctCount > 1 ? 's' : ''}`;
+  const remaining = MAX_ATTEMPTS - gameState.attemptsUsed;
+  document.getElementById('attempts-pill').textContent =
+    `${remaining} attempt${remaining !== 1 ? 's' : ''} left`;
+  document.getElementById('selected-pill').textContent =
+    `${gameState.selected.size} / ${gameState.correctCount} selected`;
+}
+
+function renderOptions(revealMode = false) {
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+
+  const correctIdx = getCorrectIndices(gameState);
+
+  gameState.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt.text;
+    btn.dataset.index = i;
+
+    if (revealMode) {
+      btn.disabled = true;
+      if (opt.correct) {
+        btn.classList.add('reveal-correct');
+      } else if (gameState.selected && gameState.selected.has(i)) {
+        // was wrongly selected (shouldn't happen post-clear, but just in case)
+        btn.classList.add('reveal-wrong');
+      }
+    } else {
+      if (gameState.selected.has(i)) btn.classList.add('selected');
+      btn.disabled = gameState.status !== 'playing';
+      btn.addEventListener('click', () => onOptionClick(i));
+    }
+
+    grid.appendChild(btn);
+  });
+}
+
+function onOptionClick(index) {
+  gameState = toggleOption(gameState, index);
+  updatePills();
+
+  // Update just this button's visual
+  const btn = document.querySelector(`.option-btn[data-index="${index}"]`);
+  if (btn) {
+    btn.classList.toggle('selected', gameState.selected.has(index));
+  }
+}
+
+function clearSelection() {
+  if (gameState.status !== 'playing') return;
+  gameState.selected.forEach(i => {
+    gameState = toggleOption(gameState, i);
+  });
+  // Re-render (easier than tracking each)
+  renderOptions();
+  updatePills();
+  hideFeedback();
+}
+
+function handleSubmit() {
+  const { newState, error } = submitAttempt(gameState);
+  gameState = newState;
+
+  if (error) {
+    showFeedback(error, 'error');
+    return;
+  }
+
+  hideFeedback();
+
+  if (gameState.status === 'won') {
+    endRound(true);
+  } else if (gameState.status === 'lost') {
+    endRound(false);
+  } else {
+    // Wrong but still playing
+    const remaining = MAX_ATTEMPTS - gameState.attemptsUsed;
+    showFeedback(
+      `Not quite — ${remaining} attempt${remaining !== 1 ? 's' : ''} left. Try again!`,
+      'warn'
+    );
+    updatePills();
+    renderOptions();
+  }
+}
+
+function endRound(won) {
+  const roundScore = calculateScore(gameState.attemptsUsed, MAX_ATTEMPTS, won);
+  if (won) wonCount++;
+  totalScore += roundScore;
+
+  // Update header
+  document.getElementById('header-score').textContent = totalScore.toLocaleString();
+
+  // Show reveal
+  renderOptions(true);
+
+  // Hide action buttons
+  document.getElementById('actions-row').style.display = 'none';
+  hideFeedback();
+
+  // Fill game-over section
+  const go = document.getElementById('game-over');
+  document.getElementById('result-emoji').textContent = won ? '🎉' : '😔';
+  const titleEl = document.getElementById('result-title');
+  titleEl.textContent = won ? 'Correct!' : 'Out of attempts';
+  titleEl.className = `result-title ${won ? 'won' : 'lost'}`;
+  document.getElementById('result-sub').textContent = won
+    ? `You got it in ${gameState.attemptsUsed} attempt${gameState.attemptsUsed > 1 ? 's' : ''}!`
+    : 'The correct answers are highlighted above.';
+  document.getElementById('round-score-display').textContent = `+${roundScore.toLocaleString()}`;
+  document.getElementById('round-score-label').textContent = 'points this round';
+
+  // Stats
+  const statsRow = document.getElementById('stats-row');
+  statsRow.innerHTML = `
+    <div class="stat-box"><div class="stat-num">${gameState.attemptsUsed}</div><div class="stat-lbl">Attempts used</div></div>
+    <div class="stat-box"><div class="stat-num">${totalScore.toLocaleString()}</div><div class="stat-lbl">Total score</div></div>
+    <div class="stat-box"><div class="stat-num">${wonCount}/${currentQIndex + 1}</div><div class="stat-lbl">Questions won</div></div>
+  `;
+
+  const isLast = currentQIndex >= QUESTIONS.length - 1;
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.textContent = isLast ? 'See Final Score' : 'Next Question →';
+
+  go.classList.add('visible');
+}
+
+function nextQuestion() {
+  currentQIndex++;
+  if (currentQIndex >= QUESTIONS.length) {
+    showFinalScore();
+  } else {
+    loadQuestion();
+  }
+}
+
+function showFinalScore() {
+  showScreen('final-screen');
+  document.getElementById('final-score-display').textContent = totalScore.toLocaleString();
+
+  const pct = Math.round((wonCount / QUESTIONS.length) * 100);
+  let verdict = '';
+  if (pct === 100) verdict = '🏆 Perfect game!';
+  else if (pct >= 80) verdict = '🌟 Excellent!';
+  else if (pct >= 60) verdict = '👍 Nice work!';
+  else if (pct >= 40) verdict = '📚 Keep practising!';
+  else verdict = '🎯 Better luck next time!';
+
+  document.getElementById('final-stats').innerHTML = `
+    <div class="stat-box"><div class="stat-num">${wonCount} / ${QUESTIONS.length}</div><div class="stat-lbl">Questions won</div></div>
+    <div class="stat-box"><div class="stat-num">${pct}%</div><div class="stat-lbl">Accuracy</div></div>
+    <div class="stat-box"><div class="stat-num">${totalScore.toLocaleString()}</div><div class="stat-lbl">Final score</div></div>
+    <div class="stat-box" style="flex-basis:100%;text-align:center;"><div class="stat-num" style="font-size:1.1rem;">${verdict}</div></div>
+  `;
+}
+
+function restartGame() {
+  showScreen('start-screen');
+}
+
+// ════════════════════════════════════════════════════
+// UI HELPERS
+// ════════════════════════════════════════════════════
+
+function showFeedback(msg, type) {
+  const el = document.getElementById('feedback');
+  el.textContent = msg;
+  el.className = `feedback visible ${type}`;
+}
+
+function hideFeedback() {
+  document.getElementById('feedback').className = 'feedback';
+}
+</script>
+</body>
+</html>
